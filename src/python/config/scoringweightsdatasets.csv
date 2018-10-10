@@ -1,0 +1,14 @@
+checkid,omschrijving,goed,matig,slecht
+1,Overige beperkingen,20,10,0
+2,beschrijving Overige beperkingen,5,0,0
+3,juridische toegangsrestricties,2,0,0
+4,juridische gebruiksrestricties,2,0,0
+5,protocol,10,0,0
+6,URL,20,0,0
+7,metadata e-mail,10,5,0
+8,titel van de dataset,2,1,0
+9,trefwoorden,10,1,0
+10,Omgrenzende rechthoek,2,0,0
+11,samenvatting,5,1,0
+12,Unieke identifier van de bron,6,1,0
+13,Metadata unieke identifier,6,1,0

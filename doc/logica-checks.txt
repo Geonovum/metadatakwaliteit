@@ -1,0 +1,141 @@
+Uitleg hoe scores bepaald worden voor metadata kwaliteit monitoring
+
+Auteur: Thijs Brentjens (t.brentjens@geonovum.nl)
+Datum: 31 juli 2013
+===================
+
+Per score volgt een toelichting. Eventueel met verwijzing naar documentatie handleiding / afwijking daarvan.
+
+Metadata voor datasets
+----------------------
+Check: 1_opendata /geogedeeld geldig url
+Beoordelingslogica: conform handleiding. De combinatie van de beschrijving en (begin van de) URL moet voorkomen in de codelistlimitations.csv voor score 2. Anders score 0.
+
+Check: 2_beschrijving beperking
+Beoordelingslogica: conform handleiding. De combinatie van de beschrijving en (begin van de) URL moet voorkomen in de codelistlimitations.csv voor score 2. Anders score 0. Hetzelfde dus als bij check 1_opendata /geogedeeld geldig url
+
+Check: 3_juridische toegangsrestricties
+Beoordelingslogica: handleiding als volgt uitgelegd:
+Scoort alleen punten als:
+1. otherRestrictions is opgenomen
+2. er niets anders dan otherRestrictions is opgenomen
+3. er niet te veel elementen voorkomen, nu gelimiteerd op 2.
+Dus: als er 1 of 2 maal otherRestrictions staat, is er een score. In alle andere gevallen is de score 0.
+
+Check: 4_juridische gebruiksrestricties
+Beoordelingslogica: handleiding als volgt uitgelegd:
+Scoort alleen punten als:
+1. otherRestrictions is opgenomen of het element leeg is
+2. er meer dan 1 element voorkomt.
+Dus: als er exact 1 maal otherRestrictions staat of als het element leeg is, is er een score. In alle andere gevallen is de score 0.
+
+Nota bene: combinaties van 3 en 4 worden niet beoordeeld / gescoord.
+
+Check: 5_URL-online-protocol
+Beoordelingscriteria: conform handleiding. Een score = 2 als voor elke URL een protocol is opgegeven dat in de codelijst voorkomt, een score = 1 als er wel een protocol is, maar dat protocol niet in de codelijst staat. Een score 0 als er wel een URL is opgegeven, maar geen protocol.
+
+Check: 6_URL-link_resource
+Beoordelingscriteria: handleiding als volgt uitgelegd:  
+Een score = 2, als:
+* voor elke opgegeven URL de URL oplosbaar is via het internet (zie uitzondering voor protocol="dataset")
+* als er geen URL opgegeven is en het protocol dat ook niet vereist (zie hieronder)
+* als het protocol begint met "OGC:", "download" of "website", dan is de URL verplicht. Alleen dan een score 2 als de URL is opgegeven.
+* als het protocol "dataset" is, mag er een niet-oplosbare URL opgegeven worden, bijvoorbeeld een interne netwerklocatie. De score is dan ook 2.
+
+Geldige HTTP codes ("de URL is op zich oplosbaar") zijn:
+Valid codes are: HTTP 2xx-serie, HTTP 3xx-serie, HTTP 400 (the server is working, but the client has send an invalid request), HTTP 403 (the server is working, but requires authentication first)  and HTTP 5xx-series (the server is running, but an internal error has occurred. This might be valid, since the error could be caused by the client-request. The service is running on the provided URL, so this code is considered okay).
+
+Bijzonderheden:
+* Als het protocol "dataset" is, mag de URL een interne locatie zijn, dit is dan aangegeven met "HTTP intern". De score voor URL is dan 2 (tenzij er nog andere fouten zijn).
+* HTTP 0 betekent dat de waarde van het element (de URL) niet te benaderen is.
+* als er wel een URL is opgegeven, maar geen protocol scoort hier wel 2 punten (als de rest okay is), maar wordt alleen het protocol afgekeurd. Dit wijkt af van de handleiding.
+* als het protocol begint met "OGC:" wordt er een GetCapabilities request verstuurd, zodat zo goed mogelijk bekeken kan worden of een geldige HTTP code terugkomt. Merk op dat er geen validatie van een (eventueel) response / Capabilities document plaatsvindt.
+* als een URL niet bereikbaar is, vinden 3 pogingen plaats om toevallige connectiefouten op internet uit te sluiten
+
+Check: 7_metadata e-mail
+Beoordelingscriteria: nog geen controle op e-mail ingebouwd, omdat dit een handmatige check is. Score is daarom altijd 0. Er wordt wel een lijst van e-mailadressen per organisatie aangelegd.
+
+Check: 8_titel metadata
+Beoordelingscriteria: de titel moet aanwezig zijn en niet te kort en niet te lang zijn: tussend e 3 en 75 karakters.
+
+Check: 9_trefwoorden
+Beoordelingscriteria: er moet minimaal 1 keyword zijn voor een score = 2. Als er komma's voorkomen binnen een keyword, dan is de score 1 (matig).
+
+Check: 10_rechthoek
+Beoordelingscriteria: de boundingbox moet opgegeven zijn voor een score = 2. Als de boundingbox (deels) buiten het gebied (bij benadering) Nederland met NCP ligt, is de score 1. Dit gebied is met latitude/longitude aangegeven als: (3.047,50.670,7.276,53.612). Als er geen extent is opgegeven, is de score 0.
+
+Check: 11_samenvatting
+Beoordelingscriteria: de samenvatting moet aanwezig zijn en niet te kort en niet te lang zijn: tussen de 25 en 2000 karakters.
+
+Check: 12_uuid bron
+Beoordelingscriteria: De UUID van de bron moet aanwezig zijn, uniek zijn (voor alle metadata records), volledig kleine letters, minstens 10 karakters lang en geen { of } bevatten.
+
+Check: 13_uuid metadata
+Beoordelingscriteria: De UUID van het metadata record moet aanwezig zijn, uniek zijn (voor alle metadata records), volledig kleine letters, minstens 10 karakters lang en geen { of } bevatten.
+
+
+Metadata services
+-----------------
+Check: 1_opendata /geogedeeld geldig url
+Beoordelingslogica: conform handleiding. De combinatie van de beschrijving en (begin van de) URL moet voorkomen in de codelistlimitations.csv voor score 2. Anders score 0.
+
+Check: 2_beschrijving beperking
+Beoordelingslogica: conform handleiding. De combinatie van de beschrijving en (begin van de) URL moet voorkomen in de codelistlimitations.csv voor score 2. Anders score 0. Hetzelfde dus als bij check 1_opendata /geogedeeld geldig url
+
+Check: 3_juridische toegangsrestricties
+Beoordelingslogica: handleiding als volgt uitgelegd:
+Scoort alleen punten als:
+1. otherRestrictions is opgenomen
+2. er niets anders dan otherRestrictions is opgenomen
+3. er niet te veel elementen voorkomen, nu gelimiteerd op 2.
+Dus: als er 1 of 2 maal otherRestrictions staat, is er een score. In alle andere gevallen is de score 0.
+
+Check: 4_juridische gebruiksrestricties
+Beoordelingslogica: handleiding als volgt uitgelegd:
+Scoort alleen punten als:
+1. otherRestrictions is opgenomen of het element leeg is
+2. er meer dan 1 element voorkomt.
+Dus: als er exact 1 maal otherRestrictions staat of als het element leeg is, is er een score. In alle andere gevallen is de score 0.
+
+Nota bene: combinaties van 3 en 4 worden niet beoordeeld / gescoord.
+
+Check: 5_Servicetype
+Beoordelingscriteria: conform handleiding. Een score = 2 als voor elke URL een protocol is opgegeven dat in de codelijst voorkomt, een score = 1 als er wel een protocol is, maar dat protocol niet in de codelijst staat. Een score 0 als er wel een URL is opgegeven, maar geen protocol.
+
+Check: 6_URL-link_resource
+Beoordelingscriteria: handleiding als volgt uitgelegd:  
+Een score = 2, als:
+* er minimaal 1 URL is opgegeven
+* voor elke opgegeven URL de URL oplosbaar is via het internet
+
+Geldige HTTP codes ("de URL is op zich oplosbaar") zijn:
+Valid codes are: HTTP 2xx-serie, HTTP 3xx-serie, HTTP 400 (the server is working, but the client has send an invalid request), HTTP 403 (the server is working, but requires authentication first)  and HTTP 5xx-series (the server is running, but an internal error has occurred. This might be valid, since the error could be caused by the client-request. The service is running on the provided URL, so this code is considered okay).
+
+Bijzonderheden:
+* Als het protocol "dataset" is, mag de URL een interne locatie zijn, dit is dan aangegeven met "HTTP intern". De score voor URL is dan 2 (tenzij er nog andere fouten zijn).
+* HTTP 0 betekent dat de waarde van het element (de URL) niet te benaderen is.
+* als er wel een URL is opgegeven, maar geen protocol scoort hier wel 2 punten (als de rest okay is), maar wordt alleen het protocol afgekeurd. Dit wijkt af van de handleiding.
+* als het protocol begint met "OGC:" wordt er een GetCapabilities request verstuurd, zodat zo goed mogelijk bekeken kan worden of een geldige HTTP code terugkomt. Merk op dat er geen validatie van een (eventueel) response / Capabilities document plaatsvindt.
+* als een URL niet bereikbaar is, vinden 3 pogingen plaats om toevallige connectiefouten op internet uit te sluiten
+
+Check: 7_metadata e-mail
+Beoordelingscriteria: nog geen controle op e-mail ingebouwd, omdat dit een handmatige check is. Score is daarom altijd 0. Er wordt wel een lijst van e-mailadressen per organisatie aangelegd.
+
+Check: 8_titel metadata
+Beoordelingscriteria: de titel moet aanwezig zijn en niet te kort en niet te lang zijn: tussend e 3 en 75 karakters.
+
+Check: 9_trefwoorden
+Beoordelingscriteria: er moet minimaal 1 keyword zijn voor een score = 2. Als er komma's voorkomen binnen een keyword, dan is de score 1 (matig).
+
+Check: 10_samenvatting
+Beoordelingscriteria: de samenvatting moet aanwezig zijn en niet te kort en niet te lang zijn: tussen de 25 en 2000 karakters.
+
+Check 11: 11_URL Connect Point
+Beoordelingscriteria: alle opgegeven URLs moeten voor een score 2 oplosbaar zijn (zie voor HTTP codes nr 6) en overeen komen met de ULR van de link resource (tenminste: het deel voor een eventueel vraagteken ("?")). Zijn ze alleen oplosbaar, dan is de score 1. Zijn ze niet oplosbaar, dan is de score 1. Bij het oplossen van de URLs wordt rekening gehouden met het protocol, om bijvoorbeeld een Capabilities document op te vragen. 
+Als het servicetype "view" of "download" is, moet tenminste 1 URL aanwezig zijn.
+
+Check 12: 12_Coupled resource URL
+Beoordelingscriteria: een geldige resource URL is oplosbaar en verwijst naar een metadata record voor datasets. De UUID opgegeven bij de URL komt overeen met de bron-uuid in de metadata van de dataset. Elke URL en elk metadata record wordt hierop gecontroleerd. Als dit allemaal goed gaat, is de score 0. Het metadata record voor datasets staat in het NGR, anders is de score maximaal 1. Als er een UUID niet gevonden wordt of een metadata record niet beschikbaar is, is de score 0.
+
+Check: 13_uuid metadata
+Beoordelingscriteria: De UUID van het metadata record moet aanwezig zijn, uniek zijn (voor alle metadata records), volledig kleine letters, minstens 10 karakters lang en geen { of } bevatten.

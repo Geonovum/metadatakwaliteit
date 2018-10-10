@@ -1,0 +1,15 @@
+checkid,omschrijving,goed,matig,slecht
+1,OtherConstraints,20,0,0
+2,beschrijving OtherConstraints,5,0,0
+3,AccessConstraints,1,0,0
+4,UseConstraints,1,0,0
+5,Service Type,5,0,0
+6,Resource locator,15,0,0
+7,Metadata point of contact,2,1,0
+8,Resource titel,2,1,0
+9,Keyword,2,1,0
+10,Resource abstract,2,1,0
+11,Connect Point Linkage,25,10,0
+12,Coupled resource URL,15,5,0
+13,Metadata identifier,5,3,0
+14,protocol,0,0,0
