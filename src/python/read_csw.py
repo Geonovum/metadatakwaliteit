@@ -1591,7 +1591,7 @@ except Exception as e:
 
 # for services:
 mdtype = 'service'
-csvheader = ["metadata_organisatie", "fileidentifier"]
+csvheader = ["metadata_organisatie", "fileidentifier", "wijzigingsdatum", "standaard_versie"]
 for i, value in enumerate(weightsservices):
     if i > 0:
         # append the omschrijving if the scoringsmatrix
