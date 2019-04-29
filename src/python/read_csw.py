@@ -299,6 +299,7 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
                 cswErrors += "ERROR getting " + \
                     str(maxRecords) + " records from startposition: " + \
                     str(start) + " \n"
+            logging.error("--------------------------------------------------------")
             time.sleep(cswtimeoutsecs)
         # wait a while, to avoid too much calls to NGR
         time.sleep(0.3)
@@ -311,7 +312,9 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
             'cannot be fetched. Number of records: ' + \
             str(maxRecords) + ', starting at index: ' + str(start)
         logging.error(attempterror)
+        logging.error("--------------------------------------------------------")
         writeSummary(cswErrors)
+        logging.error("--------------------------------------------------------")
         raise Exception(attempterror, attempterror)
     csvfile = open(csvfilename, 'a')
     csvwriter = csv.writer(csvfile, delimiter=',',
@@ -324,6 +327,7 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
         cswErrors += "No CSW response for fileIdentifier(s) : " + ','.join(
             fileIdentifierList) + "\n"
         writeSummary(cswErrors)
+        logging.error("--------------------------------------------------------")
     for rec in csw.records:
         try:
             # use OWSLib to read elements in python
@@ -581,6 +585,7 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
             errormsg += str(e) + "\n\n"
             logging.error(errormsg)
             logging.exception(e)
+            logging.error("--------------------------------------------------------")
     successFullProcessed += maxRecords
     csvfile.close()
 
@@ -619,6 +624,7 @@ def getAllRecs(maxRecords, mdtype, csvfilename, csvheader, cswErrors, successFul
         except Exception as e:
             logging.error('Error in getting Records from the CSW: ')
             logging.debug('Message: ' + str(e))
+            logging.error("--------------------------------------------------------")
         nextrecord = csw.results['nextrecord']
         returned = csw.results['returned']
         matches = csw.results['matches']
@@ -632,6 +638,7 @@ def getAllRecs(maxRecords, mdtype, csvfilename, csvheader, cswErrors, successFul
             except Exception as e:
                 logging.error('Error in getting Records from the CSW: ')
                 logging.debug('Message: ' + str(e))
+                logging.error("--------------------------------------------------------")
             nextrecord = csw.results['nextrecord']
             returned = csw.results['returned']
             matches = csw.results['matches']
@@ -679,6 +686,7 @@ def getAllRecs(maxRecords, mdtype, csvfilename, csvheader, cswErrors, successFul
                 logging.error(
                     'Error in getting Records from the CSW: ' + str(identifier))
                 logging.debug('Message: ' + str(e))
+                logging.error("--------------------------------------------------------")
                 # add this to the list to retry
                 retryIdentifiers.append(identifier)
             cntr += 1
@@ -767,6 +775,7 @@ def getMDIdentifiers(maxRecords, mdtype, cswErrors, successFullProcessed):
                 logging.error('Error getting CSW Records. Retrying after ' + str(
                     cswtimeoutsecs) + ' seconds. Number of attempts done: ' + str(attempts))
                 logging.debug('Message: ' + str(e))
+                logging.error("--------------------------------------------------------")
                 if mdtype:
                     cswErrors += mdtype + ":\n"
                 cswErrors += "ERROR getting " + str(maxRecords) + " records\n"
@@ -781,6 +790,7 @@ def getMDIdentifiers(maxRecords, mdtype, cswErrors, successFullProcessed):
             attempterror = 'Severe error: CSW Records identifiers ' + strmdtype + \
                 'cannot be fetched. Number of records: ' + str(maxRecords)
             logging.error(attempterror)
+            logging.error("--------------------------------------------------------")
             writeSummary(cswErrors)
             raise Exception(attempterror, attempterror)
         csvidentifierlist = open(
@@ -805,6 +815,7 @@ def getMDIdentifiers(maxRecords, mdtype, cswErrors, successFullProcessed):
             except Exception as e:
                 logging.error('Error processing identifiers')
                 logging.debug('Message: ' + str(e))
+                logging.error("--------------------------------------------------------")
         csvidentifierlist.close()
         start += maxRecords
         if len(csw.records) == 0:
@@ -884,6 +895,7 @@ def gethttpcode(url, protocol):
     except Exception as e:
         logging.error("Opening fails of URL: " + url)
         logging.debug(str(e))
+        logging.error("--------------------------------------------------------")
     return httpcode
 
 
