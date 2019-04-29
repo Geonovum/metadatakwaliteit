@@ -92,8 +92,7 @@ strNow = now.strftime("%Y-%m-%d_%H%M%S")
 # -----------------
 errorfilename = outputdir + strNow + \
     config.get('RESULTFILES', 'errorlog') + '.log'
-# TODO: level of logging via config
-logging.basicConfig(filename=errorfilename, level=logging.DEBUG)
+logging.basicConfig(filename=errorfilename, level=logging.ERROR)
 
 
 successFullProcessed = 0
@@ -142,11 +141,11 @@ def encodevalues(array, addtotals):
                     logging.info(str(e))
             else:
                 testvalue = val
-                testscore = 2  # default to 2 for now, TODO: avoud using strings, so use a separate score for this?
-                testresult = 1  # default to 1 for now, TODO: avoud using strings, so use a separate score for this?
-        # 0 and 1 for first two columns for fileidentifier and organisaton,
+                testscore = 2
+                testresult = 1
+        # inidices 0 - 3 are for fileidentifier, organisation, wijzigingsdatum, mdprofiel
         # then testvalue, score and result
-        if i < 2:
+        if i < 4:
             newarray.append(unicode(testvalue).encode('utf-8', 'ignore'))
         else:
             newarray.append(unicode(testvalue).encode('utf-8', 'ignore'))
@@ -158,17 +157,13 @@ def encodevalues(array, addtotals):
     return newarray
 
 # an object to hold scores
-# TODO: separate class file
-
 
 class MkmScore:
-
     def __init__(self, value, score, result):
         self.value = value
         self.score = score
         self.result = result
 
-    # TODO: implement
     def recalculate(self):
         return false
 
@@ -281,9 +276,8 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
                 # There is no need to continue, since fetching seems to be done
                 # okay
             else:
-                # time.sleep(2) # extra waiting time..
                 # csw.getrecordbyid(id=fileIdentifierList, outputschema=outputschema, esn='full', cookies=cookieJar)
-                # TODO: Thijs: is it okay to disable cookies now? This gives
+                # TODO: is it okay to disable cookies now? This gives
                 # errors. But OWSLib has some improvements in handling cookies?
                 csw.getrecordbyid(id=fileIdentifierList,
                                   outputschema=outputschema, esn='full')
@@ -308,7 +302,6 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
             time.sleep(cswtimeoutsecs)
         # wait a while, to avoid too much calls to NGR
         time.sleep(0.3)
-        # TODO: stop everything after 1 attempt
     # Remove all files?
     if attempts == maxAttempts:
         strmdtype = ' '
@@ -322,7 +315,7 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
         raise Exception(attempterror, attempterror)
     csvfile = open(csvfilename, 'a')
     csvwriter = csv.writer(csvfile, delimiter=',',
-                           quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                           quotechar='"', quoting=csv.QUOTE_ALL)
     if len(csw.records) == 0:
         logging.error("--------------------")
         logging.error("No CSW response for fileIdentifier(s) : " +
@@ -342,6 +335,9 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
                 "\n------------------------------------------------------------")
             logging.debug(
                 "Start processing record with fileidentifier: " + fileidentifier)
+            wijzigingsdatum = csw.records[rec].datestamp
+            mdprofiel = csw.records[rec].stdver
+            # TODO: add a check for wijzigingsdatum after dec 2019 and mdprofiel version not for 2.0
             # ------------------
             # Metadata fileidentifier checks
             # ------------------
@@ -561,10 +557,10 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
             # metadata,trefwoorden,rechthoek,samenvatting,uuid bron,uuid
             # metadata
             if mdtype == 'dataset' or mdtype == 'series':
-                encodedrow = encodevalues([contactorg, fileidentifier, overigebeperkingen_url, overigebeperkingen_beschrijving, juridischetoegangsrestricties,
+                encodedrow = encodevalues([contactorg, fileidentifier, wijzigingsdatum, mdprofiel, overigebeperkingen_url, overigebeperkingen_beschrijving, juridischetoegangsrestricties,
                                            juridischegebruiksrestricties, protocols, urls, contactemail, title, keywords, boundingbox, abstract, uuidbron, fileidentifierscore], addtotals=True)
             if mdtype == 'service':
-                encodedrow = encodevalues([contactorg, fileidentifier, overigebeperkingen_url, overigebeperkingen_beschrijving, juridischetoegangsrestricties, juridischegebruiksrestricties,
+                encodedrow = encodevalues([contactorg, fileidentifier, wijzigingsdatum, mdprofiel, overigebeperkingen_url, overigebeperkingen_beschrijving, juridischetoegangsrestricties, juridischegebruiksrestricties,
                                            servicetype, urls, contactemail, title, keywords, abstract, connectpoints, coupledresourceurls, fileidentifierscore, protocols], addtotals=True)
             # this is only for the scores, to write to this file
             csvwriter.writerow(encodedrow)
@@ -583,7 +579,7 @@ def getRecs(maxRecords, start, mdtype, csvfilename, cswErrors, successFullProces
             errormsg += str(rec) + "\n"
             errormsg += "Exception:" + "\n"
             errormsg += str(e) + "\n\n"
-            logging.info(errormsg)
+            logging.error(errormsg)
             logging.exception(e)
     successFullProcessed += maxRecords
     csvfile.close()
@@ -609,7 +605,7 @@ def getAllRecs(maxRecords, mdtype, csvfilename, csvheader, cswErrors, successFul
     if csvheader != None:
         csvfile = open(csvfilename, 'a')
         csvwriter = csv.writer(csvfile, delimiter=',',
-                               quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                               quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         csvwriter.writerow(csvheader)
         csvfile.close()
     print "---- Start: " + str(mdtype)
@@ -777,8 +773,6 @@ def getMDIdentifiers(maxRecords, mdtype, cswErrors, successFullProcessed):
                 time.sleep(cswtimeoutsecs)
             # wait a while, to avoid too much calls to NGR
             time.sleep(0.3)
-            # TODO: stop everything after 1 attempt
-        # TODO: how to report this back to the user? Need to discuss this.
         # Remove all files?
         if attempts == maxAttempts:
             strmdtype = ' '
@@ -802,7 +796,6 @@ def getMDIdentifiers(maxRecords, mdtype, cswErrors, successFullProcessed):
                 else:
                     title = ""
                 # log identifiers separately
-                # logging.debug(fileidentifier)
                 if fileidentifier == None:
                     fileidentifier == "no identifier found -- see errorlog"
                 if fileidentifier not in fileidentifiers:
@@ -889,7 +882,7 @@ def gethttpcode(url, protocol):
                 # wait a while, to avoid too much load
                 time.sleep(0.1)
     except Exception as e:
-        logging.info("Opening fails of URL: " + url)
+        logging.error("Opening fails of URL: " + url)
         logging.debug(str(e))
     return httpcode
 
@@ -1325,13 +1318,11 @@ def checkoverigebeperkingen(beperkingenarr, mdtype):
     else:
         result1 = checksservices[0][2][score1]
         result2 = checksservices[1][2][score2]
-    # return two MkmScores: [url, beschrijving]
     results = [MkmScore(beperkingurltxt, score1, result1),
                MkmScore(beschrijvingtxt, score2, result2)]
     return results
 
 # the abstract has checkid = 11 for datasets, 10 for services
-
 
 def checkabstract(abstracttxt, mdtype):
     """ Check the abstract
@@ -1342,7 +1333,6 @@ def checkabstract(abstracttxt, mdtype):
     ascore = 0
     if abstracttxt != None:
         abstracttxt = abstracttxt.replace("\n", " ")
-        # TODO: document check
         # TODO: make min and max abstract length configurable?
         if len(abstracttxt) >= 25 and len(abstracttxt) <= 4000:
             ascore = 2
@@ -1374,11 +1364,10 @@ def checkkeywords(keywordsarr, mdtype):
         for k in keywordsarr:
             for i in k["keywords"]:
                 i = i.replace("\n", " ")
-                # TODO: exception for 1 keyword of INSPIRE
+                # exception for 1 keyword of INSPIRE
                 if i.find(",") > -1 and i != "Gebiedsbeheer, gebieden waar beperkingen gelden, gereguleerde gebieden en rapportage-eenheden":
                     score = 1
                 keywords.append(i)
-        # TODO: document check
         # if the score is already 1, then we know the keywords are not
         # correctly set
         if len(keywords) > 0 and score != 1:
@@ -1427,7 +1416,7 @@ def checkuuidbron(uuidtxt, fileidentifier, mdtype):
     score = 0
     if uuidtxt != None:
         uuidcombi = [fileidentifier, uuidtxt]
-        if uuidcombi in allbronidentifiers:  # TODO: is this a valid statement? Or is an array a separate object?
+        if uuidcombi in allbronidentifiers:
             # check if the fileidentifier is different, then it is okay,
             # otherwise score 0
             score = 0
@@ -1453,7 +1442,7 @@ def checkuuidsyntax(uuidtxt):
     """
     score = 0
     if uuidtxt != None:
-        if len(uuidtxt) < 10:  # TODO: document check for length, is this okay to check schrijfwijze?
+        if len(uuidtxt) < 10:
             score = 0
         elif uuidtxt.find("{") > -1 or uuidtxt.find("}") > -1 or uuidtxt.lower() != uuidtxt:
             score = 1
@@ -1471,7 +1460,7 @@ def checktitle(titletxt, mdtype):
     score = 2
     if len(titletxt) > 75:
         score = 1
-    if len(titletxt) < 3:  # TODO: configureerbaar
+    if len(titletxt) < 3:
         score = 0
     if mdtype == "dataset" or mdtype == "series":
         # checkid = 8, so the index in the matrix is: 7
@@ -1567,7 +1556,7 @@ mdtype = 'dataset'  # and dataset series?
 newfilenamedataset = outputdir + strNow + \
     config.get('RESULTFILES', 'datasetsresult1') + '.csv'
 
-csvheader = ["metadata_organisatie", "fileidentifier"]
+csvheader = ["metadata_organisatie", "fileidentifier", "wijzigingsdatum", "standaard_versie"]
 for i, value in enumerate(weightsdatasets):
     if i > 0:
         # append the omschrijving of the scoringsmatrix
