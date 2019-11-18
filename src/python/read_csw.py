@@ -797,6 +797,7 @@ def getMDIdentifiers(maxRecords, mdtype, cswErrors, successFullProcessed):
             outputdir + strNow + config.get('RESULTFILES', 'identifierlist') + '.csv', 'a')
         csvidentifierlistwriter = csv.writer(
             csvidentifierlist, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+        matches = csw.results['matches']
         for rec in csw.records:
             try:
                 fileidentifier = csw.records[rec].identifier
@@ -818,7 +819,7 @@ def getMDIdentifiers(maxRecords, mdtype, cswErrors, successFullProcessed):
                 logging.error("--------------------------------------------------------")
         csvidentifierlist.close()
         start += maxRecords
-        if len(csw.records) == 0:
+        if len(csw.records) == 0 or start > matches:
             allRecordsFetched = True
     return fileidentifiers
 
